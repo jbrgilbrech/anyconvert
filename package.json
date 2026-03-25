@@ -8,7 +8,9 @@
   },
   "scripts": {
     "sync:web-vendor": "./scripts/sync-web-vendor.sh",
-    "serve:web": "python3 -m http.server 8042 --directory docs"
+    "serve:web": "python3 -m http.server 8042 --directory docs",
+    "docker:build": "docker build -t anyconvert-web:local .",
+    "docker:run": "docker run --rm -p 8080:8080 anyconvert-web:local"
   },
   "repository": {
     "type": "git",

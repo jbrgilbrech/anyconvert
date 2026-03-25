@@ -1,7 +1,7 @@
-#!/bin/zsh
-set -euo pipefail
+#!/bin/sh
+set -eu
 
-ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+ROOT_DIR="$(CDPATH= cd -- "$(dirname "$0")/.." && pwd)"
 
 mkdir -p "$ROOT_DIR/docs/vendor/ffmpeg" "$ROOT_DIR/docs/vendor/ffmpeg-util"
 cp -R "$ROOT_DIR/node_modules/@ffmpeg/ffmpeg/dist/esm/." "$ROOT_DIR/docs/vendor/ffmpeg/"
