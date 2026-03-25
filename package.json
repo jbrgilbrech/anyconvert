@@ -1,0 +1,30 @@
+{
+  "name": "dotfile-converter",
+  "version": "1.0.0",
+  "description": "`AnyConvert` is a native macOS file converter with:",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "sync:web-vendor": "./scripts/sync-web-vendor.sh",
+    "serve:web": "python3 -m http.server 8042 --directory docs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jbrgilbrech/anyconvert.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/jbrgilbrech/anyconvert/issues"
+  },
+  "homepage": "https://github.com/jbrgilbrech/anyconvert#readme",
+  "dependencies": {
+    "@ffmpeg/core": "^0.12.10",
+    "@ffmpeg/ffmpeg": "^0.12.15",
+    "@ffmpeg/util": "^0.12.2"
+  }
+}

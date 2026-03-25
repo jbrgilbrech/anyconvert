@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AnyConvert for macOS</title>
-  <meta name="description" content="AnyConvert is a native macOS file converter with a terminal app and a simple GUI app.">
+  <title>AnyConvert Browser</title>
+  <meta name="description" content="Convert images, audio, video, and subtitle files directly in your browser.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -14,76 +14,125 @@
   <div class="page-shell">
     <header class="hero">
       <div class="hero-copy">
-        <p class="eyebrow">Native macOS file conversion</p>
-        <h1>Convert images, documents, and audio without leaving your Mac.</h1>
+        <p class="eyebrow">AnyConvert in the browser</p>
+        <h1>Drop a file. Pick a format. Convert it locally.</h1>
         <p class="lede">
-          AnyConvert ships as a terminal tool and a basic GUI app. It wraps native macOS conversion tools, so common tasks like
-          JPG to PNG, TXT to RTF, SVG to PNG, MP3 to WAV, and more stay local.
+          This web version runs client-side with WebAssembly. Your file stays in the browser session while AnyConvert converts
+          common image, audio, video, and subtitle formats.
         </p>
         <div class="hero-actions">
-          <a class="button primary" href="https://github.com/jbrgilbrech/anyconvert">View Repository</a>
-          <a class="button secondary" href="https://github.com/jbrgilbrech/anyconvert#readme">Build It Locally</a>
+          <a class="button primary" href="#converter">Open Converter</a>
+          <a class="button secondary" href="https://github.com/jbrgilbrech/anyconvert">Source</a>
         </div>
       </div>
-      <div class="hero-card">
-        <div class="terminal-bar">
-          <span></span><span></span><span></span>
-        </div>
-        <pre><code>$ anyconvert convert --input photo.jpg --to png
-Converted photo.jpg -> /Users/you/Desktop/photo.png
 
-$ anyconvert formats track.mp3
-wav     WAV
-aiff    AIFF
-caf     CAF
-m4a     M4A
-flac    FLAC</code></pre>
+      <div class="hero-card status-card">
+        <div class="card-topline">
+          <span class="dot"></span>
+          <span id="engine-state">FFmpeg engine not loaded</span>
+        </div>
+        <dl class="status-grid">
+          <div>
+            <dt>Runtime</dt>
+            <dd>ffmpeg.wasm</dd>
+          </div>
+          <div>
+            <dt>Execution</dt>
+            <dd>Client-side</dd>
+          </div>
+          <div>
+            <dt>Best For</dt>
+            <dd>Images, audio, video, subtitles</dd>
+          </div>
+          <div>
+            <dt>Tradeoff</dt>
+            <dd>Large files can be slow</dd>
+          </div>
+        </dl>
       </div>
     </header>
 
     <main>
-      <section class="panel trio">
-        <article>
-          <h2>Images</h2>
-          <p>PNG, JPG, TIFF, GIF, BMP, HEIC, JP2, PDF, ICO, ICNS, TGA, PSD, AVIF, PBM.</p>
-        </article>
-        <article>
-          <h2>Documents</h2>
-          <p>TXT, RTF, RTFD, HTML, DOC, DOCX, ODT, WordML, Web Archive.</p>
-        </article>
-        <article>
-          <h2>Audio</h2>
-          <p>WAV, AIFF, AIFC, CAF, M4A, MP3, AAC, FLAC, Opus.</p>
-        </article>
+      <section class="converter" id="converter">
+        <div class="panel panel-strong drop-panel">
+          <p class="section-tag">Converter</p>
+          <h2>Browser Converter</h2>
+          <label class="dropzone" id="dropzone">
+            <input id="file-input" type="file" hidden>
+            <span class="drop-kicker">Drag and drop a file here</span>
+            <span class="drop-copy">or click to choose one from disk</span>
+          </label>
+
+          <div class="file-summary" id="file-summary" hidden>
+            <div>
+              <p class="mini-label">Selected file</p>
+              <p class="file-name" id="file-name">-</p>
+            </div>
+            <div>
+              <p class="mini-label">Detected type</p>
+              <p class="file-meta" id="file-type">-</p>
+            </div>
+            <div>
+              <p class="mini-label">Size</p>
+              <p class="file-meta" id="file-size">-</p>
+            </div>
+          </div>
+
+          <div class="controls">
+            <label class="control">
+              <span>Output format</span>
+              <select id="format-select" disabled>
+                <option value="">Choose a file first</option>
+              </select>
+            </label>
+
+            <label class="control">
+              <span>Preset</span>
+              <select id="preset-select" disabled>
+                <option value="default">Default</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="actions">
+            <button class="button primary button-fill" id="convert-button" disabled>Convert</button>
+            <a class="button secondary button-fill" id="download-link" hidden download>Download output</a>
+          </div>
+        </div>
+
+        <div class="panel log-panel">
+          <p class="section-tag">Session</p>
+          <h2>Status and Output</h2>
+          <div class="progress-shell" aria-hidden="true">
+            <div class="progress-bar" id="progress-bar"></div>
+          </div>
+          <p class="log-headline" id="status-line">Pick a file to begin.</p>
+          <pre class="log-output" id="log-output"></pre>
+        </div>
       </section>
 
-      <section class="grid">
+      <section class="feature-grid">
         <article class="panel">
-          <p class="section-tag">Terminal</p>
-          <h2>Fast CLI workflow</h2>
-          <pre><code>swift run anyconvert formats /path/to/input.jpg
-swift run anyconvert convert --input /path/to/input.jpg --to png
-swift run anyconvert convert --input /path/to/input.mp3 --to wav</code></pre>
+          <p class="section-tag">Supported</p>
+          <h2>Media-first coverage</h2>
+          <p>Images like JPG, PNG, WebP, GIF, BMP, TIFF, and SVG. Audio like MP3, WAV, FLAC, OGG, AAC, and M4A. Video like MP4, WebM, MOV, MKV, and GIF output.</p>
         </article>
 
         <article class="panel">
-          <p class="section-tag">Desktop</p>
-          <h2>Basic GUI app</h2>
-          <p>Pick a file, choose an output format, and save the converted file. The app bundle is generated from the same shared Swift conversion engine as the CLI.</p>
-          <pre><code>./scripts/build-app.sh
-open dist/AnyConvert.app</code></pre>
+          <p class="section-tag">Limits</p>
+          <h2>Not literally every format</h2>
+          <p>Browser-only conversion is realistic for many media formats, not every proprietary document type. This version focuses on the formats a static client-side app can handle well.</p>
         </article>
-      </section>
 
-      <section class="panel note">
-        <p class="section-tag">Reality check</p>
-        <h2>Not literally every file format</h2>
-        <p>
-          GitHub Pages is static hosting, so this site cannot run the native macOS converter in your browser. It publishes the project publicly,
-          explains what the app supports, and links to the source so people can build and use it on macOS.
-        </p>
+        <article class="panel">
+          <p class="section-tag">Privacy</p>
+          <h2>No upload required</h2>
+          <p>Files stay in memory inside the browser tab unless you choose to download the converted result. There is no server-side processing in this GitHub Pages app.</p>
+        </article>
       </section>
     </main>
   </div>
+
+  <script type="module" src="./app.js"></script>
 </body>
 </html>
